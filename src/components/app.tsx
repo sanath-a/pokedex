@@ -20,7 +20,7 @@ export class App extends React.Component<{},AppState> {
 
         this.state = {
             min: 1,
-            max: 16,
+            max: 21,
             pop: false,
             popId: null,
             searchTerm: '',
