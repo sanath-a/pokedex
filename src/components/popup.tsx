@@ -90,17 +90,24 @@ export class Popup extends React.Component<PopProps, detailPoke> {
                             </div>
                         </div>
                         <div className="description">
-                            <h3> Name: {this.state.name} </h3>
-                            <h4> Type: {this.state.type}</h4>
-                            <h4> Height: {Math.round(this.state.height * 10).toString() + 'cm'},
-                                Weight: {Math.round(this.state.weight * 0.1) + 'kg'}</h4>
+                            <h3>
+                                <span className= "desc_head">  Name: </span>
+                                {this.state.name}
+                            </h3>
+                            <h4> <span className = "desc_head"> Type: </span> {this.state.type}</h4>
+                            <h4>
+                                <span className= "desc_head">  Height: </span> {
+                                Math.round(this.state.height * 10).toString() + 'cm'},
+                                <span className= "desc_head"> Weight: </span>
+                                {Math.round(this.state.weight * 0.1) + 'kg'}
+                            </h4>
                             <p>
-                                <span id = "desc_head"> Abilities: </span>
+                                <span className = "desc_head"> Abilities: </span>
                                 {this.state.abilities}
                                 {"\n"}
                             </p>
                             <p>
-                                <span id = "desc_head" >Appears in: </span>
+                                <span className= "desc_head" >Appears in: </span>
                                 {this.state.games}
                             </p>
 

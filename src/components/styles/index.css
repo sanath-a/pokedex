@@ -147,8 +147,11 @@ input:-webkit-autofill:active {
 }
 .buttons {
     margin-top: 10px;
+}
 
-
+.desc_head {
+    font-weight: bolder;
+    font-size: 1.1em;
 }
 button {
     display: inline-block;
