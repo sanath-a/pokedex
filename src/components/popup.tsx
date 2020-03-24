@@ -3,22 +3,22 @@ import {upperFirst} from "./helpers";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
-type PopProps = {
+type popProps = {
     id: number,
     closer: () => void
 }
 
-type detailPoke = {
-    name: string,
-    height: number,
-    weight: number
-    img: string[],
-    type: string,
-    games: string,
-    abilities: string
+type popPoke = {
+    name: string;
+    height: number;
+    weight: number;
+    img: string[];
+    type: string;
+    games: string;
+    abilities: string;
 }
-export class Popup extends React.Component<PopProps, detailPoke> {
-    constructor(props: PopProps) {
+export class Popup extends React.Component<popProps, popPoke> {
+    constructor(props: popProps) {
         super(props);
         this.state = {
             name: null,
@@ -107,7 +107,7 @@ export class Popup extends React.Component<PopProps, detailPoke> {
                                 {"\n"}
                             </p>
                             <p>
-                                <span className= "desc_head" >Appears in: </span>
+                                <span className= "desc_head" >Games: </span>
                                 {this.state.games}
                             </p>
 

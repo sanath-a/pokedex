@@ -1,6 +1,8 @@
 import * as React from "react";
 import { PokeInfo,PokeList} from "./pokemon"
 import {Popup} from "./popup";
+import {upperFirst} from "./helpers";
+
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
 type nameList = Array<PokeInfo>;
@@ -124,6 +126,12 @@ export class App extends React.Component<{},AppState> {
         let idx: Array<number> = Array.from(Array(this.state.max - this.state.min).keys()).map((val) => {
             return (val + this.state.min);
         });
+        let pokeListNames: Array<string> = Array<string>(this.state.max - this.state.min);
+        if (this.state.pokeNames != null) {
+            pokeListNames = this.state.pokeNames.slice(this.state.min - 1, this.state.max).map((val) => {
+                return upperFirst((val.name))
+            });
+        }
         return (
             <div className = "App">
                 <header>
@@ -147,6 +155,7 @@ export class App extends React.Component<{},AppState> {
                  min = {this.state.min}
                  max = {this.state.max}
                  pokeIdx={idx}
+                 pokeNames={pokeListNames}
                  handler={this.pokeClick}
              />
                 { this.state.pop &&
