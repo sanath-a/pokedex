@@ -29,11 +29,11 @@ export class Popup extends React.Component<PopProps, detailPoke> {
             games: null,
             abilities: null
         };
-
+    this.handleOutsideClick = this.handleOutsideClick.bind(this);
     }
     propUpRef = React.createRef<HTMLDivElement>();
     componentDidMount(): void {
-        document.addEventListener('click', this.handleOutsideClick.bind(this), false);
+        document.addEventListener('click', this.handleOutsideClick, false);
         fetch(baseURL + 'pokemon/' + this.props.id.toString())
             .then(res => res.json())
             .then(data => {
@@ -62,11 +62,12 @@ export class Popup extends React.Component<PopProps, detailPoke> {
 
     }
     componentWillUnmount(): void {
-        document.removeEventListener('click',this.handleOutsideClick.bind(this), false)
+
+        document.removeEventListener('click',this.handleOutsideClick, false)
     }
 
-    handleOutsideClick(e:React.MouseEvent<HTMLDivElement>) {
-        if(!this.propUpRef.current.contains(e.currentTarget)) {
+    handleOutsideClick(e: MouseEvent):void{
+        if(!this.propUpRef.current.contains(e.target as Node)){
             this.props.closer();
         }
     }
@@ -92,7 +93,7 @@ export class Popup extends React.Component<PopProps, detailPoke> {
                             <h3> Name: {this.state.name} </h3>
                             <h4> Type: {this.state.type}</h4>
                             <h4> Height: {Math.round(this.state.height * 10).toString() + 'cm'},
-                            Weight: {Math.round(this.state.weight * 0.1) + 'kg'}</h4>
+                                Weight: {Math.round(this.state.weight * 0.1) + 'kg'}</h4>
                             <p>
                                 <span id = "desc_head"> Abilities: </span>
                                 {this.state.abilities}

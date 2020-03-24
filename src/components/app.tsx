@@ -74,12 +74,11 @@ export class App extends React.Component<{},AppState> {
                  pokeIdx={idx}
                  handler={this.pokeClick.bind(this)}
              />
-                { this.state.pop ?
+                { this.state.pop &&
                     <Popup
                         id={this.state.popId}
                         closer = {this.pokeClose.bind(this)}
-                    /> :
-                    null
+                    />
                 }
 
                 <div className="buttons">
