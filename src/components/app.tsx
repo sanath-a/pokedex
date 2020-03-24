@@ -49,7 +49,6 @@ export class App extends React.Component<{},AppState> {
     }
 
     pokeClose() {
-        console.log('close');
         this.setState({
             min: this.state.min,
             max: this.state.max,
