@@ -71,7 +71,7 @@ export class PokeList extends React.Component<PokeListProps, PokeListState> {
 export interface PokeInfo {
     id: number,
     name: string,
-    handleClick: (id: number) => void
+    handleClick?: (id: number) => void
 }
 export function Pokemon(props: PokeInfo) {
     const img_url : string = baseImg + props.id.toString() + '.png';
