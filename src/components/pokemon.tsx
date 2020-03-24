@@ -1,7 +1,7 @@
 import * as React from "react";
 import {upperFirst} from "./helpers";
 
-const baseURL:string = "http://pokeapi.co/api/v2/";
+const baseURL:string = "https://pokeapi.co/api/v2/";
 const baseImg:string = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 
 
