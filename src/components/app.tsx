@@ -1,7 +1,6 @@
 import * as React from "react";
 import { PokeInfo,PokeList} from "./pokemon"
 import {Popup} from "./popup";
-import {upperFirst} from "./helpers";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
@@ -18,6 +17,9 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
     constructor(props: null) {
         super(props);
         let idx = Array.from(Array(this.props.perPage).keys()).map((val) => {
+            if(val > 807) {
+                return (val + 9193 + 1)
+            }
             return (val + 1);
         });
         this.state = {
@@ -43,6 +45,9 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
         this.setState({
             min: min,
             idx: Array.from(Array(max - min).keys()).map((val) => {
+                if (min + val > 808) {
+                    return (min + val + 9193)
+                }
                 return (min + val)
             })
         })
@@ -138,10 +143,11 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
             .then(res => {
                 const data:any = res['results'];
                 let pokeNames:nameList = Object.entries(data).map((val:any,i) => {
-
+                    let id = i + 1;
+                    if (i > 807) id = i + 9194;
                     return ({
                         name: val[1]['name'],
-                        id: i+1
+                        id: id
                     })
                 });
                 this.setState({
@@ -151,10 +157,10 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
     }
 
     render() {
-        let pokeNames = Array<string>(this.props.maxPoke);
+        let searchNames = Array<PokeInfo>(this.props.perPage);
         if (this.state.pokeNames != null) {
-            pokeNames = this.state.pokeNames.slice().map((val) => {
-                return upperFirst(val['name']);
+            searchNames= this.state.pokeNames.slice().filter((val) => {
+                return this.state.idx.includes(val.id)
             });
         }
         return (
@@ -177,8 +183,7 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
 
                 </header>
              <PokeList
-                 pokeIdx={this.state.idx}
-                 pokeNames={pokeNames}
+                 pokeNames={searchNames}
                  handler={this.pokeClick}
              />
                 { this.state.pop &&
