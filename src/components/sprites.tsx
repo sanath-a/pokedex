@@ -58,7 +58,7 @@ export class  Sprites extends React.Component<spriteProps, spriteState>  {
                 {
                     this.state.hasShinyFront ?
                     <img src={this.props.shiny_front} alt={this.props.name + ' shiny front'}/>
-                    : <p> loading </p>
+                    : <p> Image Not Available </p>
                 }
                 {
                     this.state.hasBack &&

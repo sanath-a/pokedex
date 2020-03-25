@@ -1,31 +1,36 @@
 import * as React from "react";
 import { PokeInfo,PokeList} from "./pokemon"
 import {Popup} from "./popup";
-import {upperFirst} from "./helpers";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
 type nameList = Array<PokeInfo>;
 interface AppState {
     min: number,
-    max: number,
+    idx: number[],
     pop: boolean,
     popId: number,
     searchTerm: string,
     pokeNames: nameList
 }
-export class App extends React.Component<{},AppState> {
+export class App extends React.Component<{perPage: number, maxPoke: number},AppState> {
     constructor(props: null) {
         super(props);
-
+        let idx = Array.from(Array(this.props.perPage).keys()).map((val) => {
+            if(val > 807) {
+                return (val + 9193 + 1)
+            }
+            return (val + 1);
+        });
         this.state = {
-            min: 1,
-            max: 21,
+            min: idx[0],
+            idx: idx,
             pop: false,
             popId: null,
             searchTerm: '',
             pokeNames: null
         };
+        this.idxGenerator = this.idxGenerator.bind(this);
         this.handlePrevious = this.handlePrevious.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.enterTerm = this.enterTerm.bind(this);
@@ -36,28 +41,51 @@ export class App extends React.Component<{},AppState> {
         this.pokeClose = this.pokeClose.bind(this);
     }
 
-
-    handlePrevious():void {
-        if (this.state.min >= this.state.max-this.state.min){
-            this.setState({
-                min: this.state.min - (this.state.max - this.state.min),
-                max: (this.state.max) -(this.state.max - this.state.min)
+    idxGenerator(min: number, max: number):void {
+        this.setState({
+            min: min,
+            idx: Array.from(Array(max - min).keys()).map((val) => {
+                if (min + val > 808) {
+                    return (min + val + 9193)
+                }
+                return (min + val)
             })
+        })
+    }
+    handlePrevious():void {
+        if (this.state.idx[0] >= this.props.perPage){
+            this.idxGenerator(this.state.min - this.props.perPage, this.state.idx[this.state.idx.length - 1] - this.props.perPage + 1);
         }
     }
     handleNext():void  {
-        this.setState(
-            {
-                min: this.state.max,
-                max: 2 * this.state.max - this.state.min
-            }
-        );
+        let last_term = this.state.idx[this.state.idx.length - 1];
+        if (last_term == this.props.maxPoke){
+            return
+        } else if(this.state.idx[this.state.idx.length - 1] > this.props.maxPoke - this.props.perPage ) {
+            this.idxGenerator(last_term, this.props.maxPoke + 1);
+        } else {
+            this.idxGenerator(this.state.min + this.props.perPage, last_term + this.props.perPage + 1);
+        }
     }
 
     enterTerm(e: React.FormEvent<HTMLInputElement>):void {
-        this.setState({
-            searchTerm: e.currentTarget.value.toLowerCase()
-        })
+        let term = e.currentTarget.value.toLowerCase();
+        if (term === '') {
+            this.idxGenerator(this.state.min, this.state.min + this.props.perPage);
+            this.setState({
+                searchTerm: ''
+            })
+        } else {
+            let searchPokeInfo = this.state.pokeNames.slice().filter((val) => {
+                return (val['name'].includes(term))
+            });
+            let searchIdx = searchPokeInfo.map((val) => val.id);
+            this.setState({
+                searchTerm: e.currentTarget.value.toLowerCase(),
+                idx: searchIdx
+            });
+        }
+
     }
 
     clickSearch(e: React.MouseEvent<HTMLInputElement>):void {
@@ -66,7 +94,11 @@ export class App extends React.Component<{},AppState> {
     }
     enterSearch(e: React.KeyboardEvent){
         if(e.key === 'Enter'){
-            this.pokeSearch();
+            if(this.state.pop) {
+                this.pokeClose()
+            } else {
+                this.pokeSearch();
+            }
         }
     }
 
@@ -75,20 +107,24 @@ export class App extends React.Component<{},AppState> {
             return (val['name'] == this.state.searchTerm);
         });
 
-        if (return_val != undefined) {
+        if (return_val != undefined ) {
             this.setState({
                 pop: true,
                 popId: return_val['id']
             })
-        } else {
+        } else if(this.state.idx.length == 1) {
+            this.setState({
+                pop: true,
+                popId: this.state.idx[0]
+            })
+        }
+        else if(this.state.idx.length == 0){
             alert('No Pokemon found with that name!');
         }
     }
 
     pokeClick(id: number):void {
         this.setState({
-            min: this.state.min,
-            max: this.state.max,
             pop: true,
             popId: id
         })
@@ -96,23 +132,22 @@ export class App extends React.Component<{},AppState> {
 
     pokeClose():void {
         this.setState({
-            min: this.state.min,
-            max: this.state.max,
             pop: false,
             popId: null
         })
     }
 
     componentDidMount(): void {
-        fetch(baseURL+ 'pokemon?limit=1000')
+        fetch(baseURL+ 'pokemon?limit=' + this.props.maxPoke.toString())
             .then(res => res.json())
             .then(res => {
                 const data:any = res['results'];
                 let pokeNames:nameList = Object.entries(data).map((val:any,i) => {
-
+                    let id = i + 1;
+                    if (i > 807) id = i + 9194;
                     return ({
-                        name: val[1]['name'].split('-')[0],
-                        id: i+1
+                        name: val[1]['name'],
+                        id: id
                     })
                 });
                 this.setState({
@@ -122,13 +157,10 @@ export class App extends React.Component<{},AppState> {
     }
 
     render() {
-        let idx: Array<number> = Array.from(Array(this.state.max - this.state.min).keys()).map((val) => {
-            return (val + this.state.min);
-        });
-        let pokeListNames: Array<string> = Array<string>(this.state.max - this.state.min);
+        let searchNames = Array<PokeInfo>(this.props.perPage);
         if (this.state.pokeNames != null) {
-            pokeListNames = this.state.pokeNames.slice(this.state.min - 1, this.state.max).map((val) => {
-                return upperFirst((val.name))
+            searchNames= this.state.pokeNames.slice().filter((val) => {
+                return this.state.idx.includes(val.id)
             });
         }
         return (
@@ -151,10 +183,7 @@ export class App extends React.Component<{},AppState> {
 
                 </header>
              <PokeList
-                 min = {this.state.min}
-                 max = {this.state.max}
-                 pokeIdx={idx}
-                 pokeNames={pokeListNames}
+                 pokeNames={searchNames}
                  handler={this.pokeClick}
              />
                 { this.state.pop &&
@@ -163,11 +192,12 @@ export class App extends React.Component<{},AppState> {
                         closer = {this.pokeClose}
                     />
                 }
-
-                <div className="buttons">
-                    <button id = "prev" onClick={this.handlePrevious}> Previous </button>
-                    <button id = "next" onClick={this.handleNext}> Next</button>
-                </div>
+                {   this.state.searchTerm === '' &&
+                    <div className="buttons">
+                        <button id="prev" onClick={this.handlePrevious}> Previous</button>
+                        <button id="next" onClick={this.handleNext}> Next</button>
+                    </div>
+                }
             </div>
 
         );

@@ -90,6 +90,10 @@ input:-webkit-autofill:active {
     height: 150px;
     border-radius: 10px;
 }
+.pokemon img {
+    height: 96px;
+    width: 96px;
+}
 .popup {
     position: fixed;
     width: 100%;

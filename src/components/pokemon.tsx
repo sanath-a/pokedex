@@ -1,15 +1,13 @@
 import * as React from "react";
+import {upperFirst} from "./helpers";
 
 const baseImg:string = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 
 
 
 type PokeListProps = {
-    min: number,
-    max: number,
     handler: (id: number) => void
-    pokeIdx: Array<number>;
-    pokeNames: Array<string>;
+    pokeNames: Array<PokeInfo>
 }
 
 
@@ -18,11 +16,11 @@ export class PokeList extends React.Component<PokeListProps,{}> {
       return (
           <div className= "pokeList">
               {
-                  this.props.pokeIdx.map((id, i) => {
+                  this.props.pokeNames.map((poke) => {
                       return (<Pokemon
-                              key={id}
-                              id={id}
-                              name={this.props.pokeNames[i]}
+                              key={poke.id}
+                              id={poke.id}
+                              name={poke.name}
                               handleClick={this.props.handler}
                           />
                       );
@@ -40,6 +38,13 @@ export interface PokeInfo {
 }
 function Pokemon(props: PokeInfo) {
     const img_url : string = baseImg + props.id.toString() + '.png';
+    let name = upperFirst(props.name);
+    if(name.includes('-')){
+        let names_array = props.name.split('-').map((val) => {
+            return upperFirst(val)
+        });
+        name = names_array.join(' ')
+    }
     return (
         <div
             className = "pokemon"
@@ -51,7 +56,7 @@ function Pokemon(props: PokeInfo) {
                 alt = {props.name}
                 id = {props.id.toString()}
             />
-            <h3> {props.name}</h3>
+            <h3> {name}</h3>
         </div>
     );
 }
