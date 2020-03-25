@@ -86,7 +86,7 @@ input:-webkit-autofill:active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 200px;
+    width: 250px;
     height: 150px;
     border-radius: 10px;
 }
@@ -128,6 +128,7 @@ input:-webkit-autofill:active {
     flex-direction: column;
 }
 .description {
+    height: 100%;
     margin-left: 10%;
     width: 40%;
     display: flex;

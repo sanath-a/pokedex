@@ -71,7 +71,6 @@ export class App extends React.Component<{},AppState> {
     }
 
     pokeSearch():void {
-        console.log(this.state);
         let return_val:PokeInfo = this.state.pokeNames.find((val) => {
             return (val['name'] == this.state.searchTerm);
         });

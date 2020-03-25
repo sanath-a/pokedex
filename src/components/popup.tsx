@@ -1,5 +1,7 @@
 import * as React from 'react';
 import {upperFirst} from "./helpers";
+import {Sprites} from "./sprites";
+import {Description} from "./description";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
@@ -77,41 +79,22 @@ export class Popup extends React.Component<popProps, popPoke> {
             <div className= "popup">
                 <div className= "popup_inner">
                     <div ref = {this.propUpRef} className="content">
-                        <div className = "images">
-                            <div id = "default_imgs">
-                                <h4> Default: </h4>
-                                <img src = {this.state.img[0]} alt = {this.state.name + ' front'}/>
-                                <img src = {this.state.img[1] } alt = { this.state.name + 'back'}/>
-                            </div>
-                            <div id = "shiny_imgs">
-                                <h4> Shiny: </h4>
-                                <img src = {this.state.img[2]} alt = {this.state.name + ' shiny front'}/>
-                                <img src = {this.state.img[3]} alt = {this.state.name + 'shiny back'}/>
-                            </div>
-                        </div>
-                        <div className="description">
-                            <h3>
-                                <span className= "desc_head">  Name: </span>
-                                {this.state.name}
-                            </h3>
-                            <h4> <span className = "desc_head"> Type: </span> {this.state.type}</h4>
-                            <h4>
-                                <span className= "desc_head">  Height: </span> {
-                                Math.round(this.state.height * 10).toString() + 'cm'},
-                                <span className= "desc_head"> Weight: </span>
-                                {Math.round(this.state.weight * 0.1) + 'kg'}
-                            </h4>
-                            <p>
-                                <span className = "desc_head"> Abilities: </span>
-                                {this.state.abilities}
-                                {"\n"}
-                            </p>
-                            <p>
-                                <span className= "desc_head" >Games: </span>
-                                {this.state.games}
-                            </p>
+                        <Sprites
+                            name={this.state.name}
+                            front={this.state.img[0]}
+                            back={this.state.img[1]}
+                            shiny_front={this.state.img[2]}
+                            shiny_back={this.state.img[3]} />
 
-                        </div>
+
+                        <Description
+                            name={this.state.name}
+                            height={this.state.height}
+                            weight={this.state.weight}
+                            type={this.state.type}
+                            games={this.state.games}
+                            abilities={this.state.abilities}
+                        />
                         <button id = "closeButton" onClick={() => this.props.closer()}> Close </button>
                     </div>
 
