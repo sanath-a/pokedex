@@ -4,6 +4,8 @@ import * as ReactDOM from "react-dom";
 import { App } from "./components/app";
 
 ReactDOM.render(
-    <App />,
+    <App
+        perPage={20}
+        maxPoke={807}/>,
     document.getElementById("yessir")
 );

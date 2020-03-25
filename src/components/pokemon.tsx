@@ -5,8 +5,6 @@ const baseImg:string = "https://raw.githubusercontent.com/PokeAPI/sprites/master
 
 
 type PokeListProps = {
-    min: number,
-    max: number,
     handler: (id: number) => void
     pokeIdx: Array<number>;
     pokeNames: Array<string>;
@@ -18,11 +16,11 @@ export class PokeList extends React.Component<PokeListProps,{}> {
       return (
           <div className= "pokeList">
               {
-                  this.props.pokeIdx.map((id, i) => {
+                  this.props.pokeIdx.map((id) => {
                       return (<Pokemon
                               key={id}
                               id={id}
-                              name={this.props.pokeNames[i]}
+                              name={this.props.pokeNames[id - 1]}
                               handleClick={this.props.handler}
                           />
                       );
