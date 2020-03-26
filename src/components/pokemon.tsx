@@ -39,12 +39,6 @@ export interface PokeInfo {
 function Pokemon(props: PokeInfo) {
     const img_url : string = baseImg + props.id.toString() + '.png';
     let name = upperFirst(props.name);
-    if(name.includes('-')){
-        let names_array = props.name.split('-').map((val) => {
-            return upperFirst(val)
-        });
-        name = names_array.join(' ')
-    }
     return (
         <div
             className = "pokemon"
