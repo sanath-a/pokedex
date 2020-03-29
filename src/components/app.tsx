@@ -4,28 +4,29 @@ import {Popup} from "./popup";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
+//Shorthand for the type of PokeNames
 type nameList = Array<PokeInfo>;
+//Internal App State
 interface AppState {
-    min: number,
-    idx: number[],
-    pop: boolean,
-    popId: number,
-    searchTerm: string,
-    pokeNames: nameList
+    current: number, //Current first element
+    idx: number[], //Ids of currently displayed pokemon
+    popId: number, //Id of pop-up Pokemon
+    searchTerm: string, //Current search term
+    pokeNames: nameList //List of all pokemon that can be displayed
 }
+
 export class App extends React.Component<{perPage: number, maxPoke: number},AppState> {
     constructor(props: null) {
         super(props);
         let idx = Array.from(Array(this.props.perPage).keys()).map((val) => {
-            if(val > 807) {
+            if(val >= 807) {
                 return (val + 9193 + 1)
             }
             return (val + 1);
         });
         this.state = {
-            min: idx[0],
+            current: 1,
             idx: idx,
-            pop: false,
             popId: null,
             searchTerm: '',
             pokeNames: null
@@ -40,38 +41,44 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
         this.pokeClick = this.pokeClick.bind(this);
         this.pokeClose = this.pokeClose.bind(this);
     }
-
+    // Convenience function to set current idx
     idxGenerator(min: number, max: number):void {
         this.setState({
-            min: min,
+            current: min,
             idx: Array.from(Array(max - min).keys()).map((val) => {
-                if (min + val > 808) {
+                if (min + val >= 807) {
                     return (min + val + 9193)
                 }
                 return (min + val)
             })
         })
     }
+    /*
+    ---- EVENT HANDLERS ----
+    */
+    // Event handler for previous button
     handlePrevious():void {
         if (this.state.idx[0] >= this.props.perPage){
-            this.idxGenerator(this.state.min - this.props.perPage, this.state.idx[this.state.idx.length - 1] - this.props.perPage + 1);
+            this.idxGenerator(this.state.current - this.props.perPage, this.state.current);
         }
     }
+    // Event handler for next button
     handleNext():void  {
         let last_term = this.state.idx[this.state.idx.length - 1];
         if (last_term == this.props.maxPoke){
-            return
-        } else if(this.state.idx[this.state.idx.length - 1] > this.props.maxPoke - this.props.perPage ) {
-            this.idxGenerator(last_term, this.props.maxPoke + 1);
+            alert('No more pokemon to display!');
+            return;
+        } else if(last_term > this.props.maxPoke - this.props.perPage ) {
+            this.idxGenerator(last_term + 1, this.props.maxPoke + 1);
         } else {
-            this.idxGenerator(this.state.min + this.props.perPage, last_term + this.props.perPage + 1);
+            this.idxGenerator(this.state.current + this.props.perPage, last_term + this.props.perPage + 1);
         }
     }
-
+    // Event handler for onChange for search input
     enterTerm(e: React.FormEvent<HTMLInputElement>):void {
         let term = e.currentTarget.value.toLowerCase();
         if (term === '') {
-            this.idxGenerator(this.state.min, this.state.min + this.props.perPage);
+            this.idxGenerator(this.state.current, this.state.current + this.props.perPage);
             this.setState({
                 searchTerm: ''
             })
@@ -87,21 +94,39 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
         }
 
     }
-
+    // Event handler for search button
     clickSearch(e: React.MouseEvent<HTMLInputElement>):void {
         e.preventDefault();
         this.pokeSearch()
     }
+    // Event handler for enter key
     enterSearch(e: React.KeyboardEvent){
         if(e.key === 'Enter'){
-            if(this.state.pop) {
+            if(this.state.popId) {
                 this.pokeClose()
             } else {
                 this.pokeSearch();
             }
         }
     }
+    // Event handler for clicking on a pokemon
+    pokeClick(id: number):void {
+        this.setState({
+            popId: id
+        })
+    }
+    // Event handler for closing a selected pokemon
+    pokeClose():void {
+        this.setState({
+            popId: null
+        })
+    }
 
+    /*
+        SEARCH + REACT LIFECYCLE FUNCTIONS
+    */
+
+    // Searches for a Pokemon and displays if a match was found or there's only one pokemon displayed currently
     pokeSearch():void {
         let return_val:PokeInfo = this.state.pokeNames.find((val) => {
             return (val['name'] == this.state.searchTerm);
@@ -109,12 +134,10 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
 
         if (return_val != undefined ) {
             this.setState({
-                pop: true,
                 popId: return_val['id']
             })
         } else if(this.state.idx.length == 1) {
             this.setState({
-                pop: true,
                 popId: this.state.idx[0]
             })
         }
@@ -123,20 +146,8 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
         }
     }
 
-    pokeClick(id: number):void {
-        this.setState({
-            pop: true,
-            popId: id
-        })
-    }
 
-    pokeClose():void {
-        this.setState({
-            pop: false,
-            popId: null
-        })
-    }
-
+    // Fetches list of all pokemon in given scope from the API
     componentDidMount(): void {
         fetch(baseURL+ 'pokemon?limit=' + this.props.maxPoke.toString())
             .then(res => res.json())
@@ -144,7 +155,7 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
                 const data:any = res['results'];
                 let pokeNames:nameList = Object.entries(data).map((val:any,i) => {
                     let id = i + 1;
-                    if (i > 807) id = i + 9194;
+                    if (i >= 807) id = i + 9194;
                     return ({
                         name: val[1]['name'],
                         id: id
@@ -155,7 +166,7 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
                 })
             });
     }
-
+    // Renders the App.
     render() {
         let searchNames = Array<PokeInfo>(this.props.perPage);
         if (this.state.pokeNames != null) {
@@ -186,10 +197,10 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
                  pokeNames={searchNames}
                  handler={this.pokeClick}
              />
-                { this.state.pop &&
+                { this.state.popId &&
                     <Popup
                         id={this.state.popId}
-                        closer = {this.pokeClose}
+                        handleClose = {this.pokeClose}
                     />
                 }
                 {   this.state.searchTerm === '' &&
@@ -199,6 +210,7 @@ export class App extends React.Component<{perPage: number, maxPoke: number},AppS
                     </div>
                 }
             </div>
+
 
         );
     }

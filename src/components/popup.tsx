@@ -5,11 +5,12 @@ import {Description} from "./description";
 
 const baseURL:string = "https://pokeapi.co/api/v2/";
 
+//Props for popUp
 type popProps = {
     id: number,
-    closer: () => void
+    handleClose: () => void
 }
-
+//Information to be fetched displayed
 type popPoke = {
     name: string;
     height: number;
@@ -19,6 +20,10 @@ type popPoke = {
     games: string;
     abilities: string;
 }
+
+/*
+    Renders a popup description of a pokemon.
+ */
 export class Popup extends React.Component<popProps, popPoke> {
     constructor(props: popProps) {
         super(props);
@@ -26,15 +31,21 @@ export class Popup extends React.Component<popProps, popPoke> {
             name: null,
             height: null,
             weight: null,
-            img: [null,null,null,null],
+            img: Array<string>(4),
             type: null,
             games: null,
             abilities: null
         };
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
     }
+    //Reference to handle clicks
     propUpRef = React.createRef<HTMLDivElement>();
-    componentDidMount(): void {
+
+    /*
+        --- REACT LIFECYCLE FUNCTIONS ---
+     */
+    //Fetches data from server and updates state
+    componentDidMount() {
         document.addEventListener('click', this.handleOutsideClick, false);
         fetch(baseURL + 'pokemon/' + this.props.id.toString())
             .then(res => res.json())
@@ -63,14 +74,15 @@ export class Popup extends React.Component<popProps, popPoke> {
             });
 
     }
-    componentWillUnmount(): void {
-
+    //Removes event listener
+    componentWillUnmount() {
         document.removeEventListener('click',this.handleOutsideClick, false)
     }
 
-    handleOutsideClick(e: MouseEvent):void{
+    // Handles a click outside of the popup
+    handleOutsideClick(e: MouseEvent){
         if(!this.propUpRef.current.contains(e.target as Node)){
-            this.props.closer();
+            this.props.handleClose();
         }
     }
 
@@ -95,7 +107,7 @@ export class Popup extends React.Component<popProps, popPoke> {
                             games={this.state.games}
                             abilities={this.state.abilities}
                         />
-                        <button id = "closeButton" onClick={() => this.props.closer()}> Close </button>
+                        <button id = "closeButton" onClick={() => this.props.handleClose()}> Close </button>
                     </div>
 
                 </div>

@@ -15,6 +15,9 @@ type spriteState = {
     hasShinyFront: boolean,
     hasShinyBack: boolean
 }
+/*
+    Displays sprites.
+ */
 export class  Sprites extends React.Component<spriteProps, spriteState>  {
     constructor(props: spriteProps) {
         super(props);

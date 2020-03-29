@@ -9,6 +9,7 @@ type descProps = {
     abilities: string
 }
 
+// Displays a description of the displayed pokemon.
 export function Description(props: descProps) {
     let games:JSX.Element;
     console.log(props.games);
