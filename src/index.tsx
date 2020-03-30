@@ -6,6 +6,6 @@ import { App } from "./components/app";
 ReactDOM.render(
     <App
         perPage={20}
-        maxPoke={50}/>,
+        maxPoke={964}/>,
     document.getElementById("container")
 );
