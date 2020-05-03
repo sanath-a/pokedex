@@ -7,5 +7,5 @@ ReactDOM.render(
     <App
         perPage={20}
         maxPoke={964}/>,
-    document.getElementById("container")
+    document.querySelector("#root")
 );

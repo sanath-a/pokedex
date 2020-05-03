@@ -16,7 +16,7 @@ interface AppState {
 }
 
 export class App extends React.Component<{perPage: number, maxPoke: number},AppState> {
-    constructor(props: null) {
+    constructor(props: {perPage: number, maxPoke: number}) {
         super(props);
         let idx = Array.from(Array(this.props.perPage).keys()).map((val) => {
             if(val >= 807) {
